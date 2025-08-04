@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Development Browser
+Exec=firefox --new-window "http://localhost:3000" "http://localhost:8080" "https://github.com" "https://stackoverflow.com"
+Icon=firefox
+Comment=Open browser with development tabs
+Categories=Network;WebBrowser;
+StartupNotify=true
+NoDisplay=false
+Hidden=false
+X-GNOME-Autostart-enabled=true

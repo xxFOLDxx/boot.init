@@ -1,0 +1,34 @@
+# Boot-time tasks
+# Add these to your crontab with: crontab -e
+
+# Set environment variables
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+HOME=/home/username
+
+# Mount network drives at boot
+@reboot sleep 30 && /usr/local/bin/mount-network-drives.sh
+
+# Start custom services at boot
+@reboot sleep 60 && /usr/local/bin/start-dev-services.sh
+
+# Initialize development environment
+@reboot sleep 90 && /home/username/.local/bin/init-dev-env.sh
+
+# Check and update system time
+@reboot sleep 120 && ntpdate -s time.nist.gov
+
+# Cleanup temporary files from previous session
+@reboot find /tmp -type f -atime +1 -delete 2>/dev/null
+
+# Start monitoring script
+@reboot sleep 180 && /usr/local/bin/system-monitor.sh &
+
+# Initialize project directories
+@reboot mkdir -p /home/username/projects /home/username/logs /home/username/backups
+
+# Set proper permissions for development directories
+@reboot chmod 755 /home/username/projects /home/username/logs
+
+# Start background backup process
+@reboot sleep 300 && /usr/local/bin/background-backup.sh &

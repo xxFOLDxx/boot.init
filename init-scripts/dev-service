@@ -1,0 +1,159 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          dev-service
+# Required-Start:    $remote_fs $syslog $network
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Development service
+# Description:       Custom development service for project automation
+### END INIT INFO
+
+# Source function library
+. /lib/lsb/init-functions
+
+# Service configuration
+SERVICE_NAME="dev-service"
+SERVICE_USER="developer"
+SERVICE_GROUP="developer"
+SERVICE_HOME="/home/developer"
+SERVICE_EXEC="/usr/local/bin/dev-service.sh"
+PID_FILE="/var/run/$SERVICE_NAME.pid"
+LOCK_FILE="/var/lock/subsys/$SERVICE_NAME"
+LOG_FILE="/var/log/$SERVICE_NAME.log"
+
+# Check if service executable exists
+test -x $SERVICE_EXEC || exit 5
+
+start() {
+    echo -n "Starting $SERVICE_NAME: "
+    
+    # Check if already running
+    if [ -f $PID_FILE ]; then
+        PID=$(cat $PID_FILE)
+        if kill -0 $PID 2>/dev/null; then
+            echo "already running (PID $PID)"
+            return 1
+        else
+            rm -f $PID_FILE
+        fi
+    fi
+    
+    # Start the service
+    start-stop-daemon --start --quiet \
+        --pidfile $PID_FILE \
+        --make-pidfile \
+        --background \
+        --chuid $SERVICE_USER:$SERVICE_GROUP \
+        --chdir $SERVICE_HOME \
+        --exec $SERVICE_EXEC
+    
+    RETVAL=$?
+    
+    if [ $RETVAL -eq 0 ]; then
+        touch $LOCK_FILE
+        echo "started"
+        log_success_msg "$SERVICE_NAME started"
+    else
+        echo "failed"
+        log_failure_msg "$SERVICE_NAME failed to start"
+    fi
+    
+    return $RETVAL
+}
+
+stop() {
+    echo -n "Stopping $SERVICE_NAME: "
+    
+    if [ ! -f $PID_FILE ]; then
+        echo "not running"
+        return 1
+    fi
+    
+    PID=$(cat $PID_FILE)
+    
+    # Stop the service
+    start-stop-daemon --stop --quiet \
+        --pidfile $PID_FILE \
+        --retry 10
+    
+    RETVAL=$?
+    
+    if [ $RETVAL -eq 0 ]; then
+        rm -f $PID_FILE $LOCK_FILE
+        echo "stopped"
+        log_success_msg "$SERVICE_NAME stopped"
+    else
+        echo "failed"
+        log_failure_msg "$SERVICE_NAME failed to stop"
+    fi
+    
+    return $RETVAL
+}
+
+restart() {
+    stop
+    sleep 2
+    start
+}
+
+reload() {
+    echo -n "Reloading $SERVICE_NAME: "
+    
+    if [ ! -f $PID_FILE ]; then
+        echo "not running"
+        return 1
+    fi
+    
+    PID=$(cat $PID_FILE)
+    
+    if kill -HUP $PID 2>/dev/null; then
+        echo "reloaded"
+        log_success_msg "$SERVICE_NAME reloaded"
+        return 0
+    else
+        echo "failed"
+        log_failure_msg "$SERVICE_NAME failed to reload"
+        return 1
+    fi
+}
+
+status() {
+    if [ -f $PID_FILE ]; then
+        PID=$(cat $PID_FILE)
+        if kill -0 $PID 2>/dev/null; then
+            echo "$SERVICE_NAME is running (PID $PID)"
+            return 0
+        else
+            echo "$SERVICE_NAME is not running (stale PID file)"
+            return 1
+        fi
+    else
+        echo "$SERVICE_NAME is not running"
+        return 3
+    fi
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        restart
+        ;;
+    reload)
+        reload
+        ;;
+    status)
+        status
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|reload|status}"
+        exit 2
+        ;;
+esac
+
+exit $?

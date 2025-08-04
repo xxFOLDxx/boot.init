@@ -1,0 +1,17 @@
+[Unit]
+Description=Network Drive Mount
+After=network-online.target
+Wants=network-online.target
+Before=graphical.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/mount -t cifs //server/share /mnt/network -o credentials=/etc/samba/credentials,uid=1000,gid=1000
+ExecStop=/bin/umount /mnt/network
+TimeoutStartSec=30
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

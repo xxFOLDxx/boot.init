@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=VS Code IDE
+Exec=code ~/projects
+Icon=code
+Comment=Open VS Code with projects directory
+Categories=Development;IDE;
+StartupNotify=true
+NoDisplay=false
+Hidden=false
+X-GNOME-Autostart-enabled=true
+TryExec=code

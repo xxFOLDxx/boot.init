@@ -1,0 +1,35 @@
+# System maintenance tasks
+# Add these to your crontab with: crontab -e
+
+# Update package database daily at 2 AM
+0 2 * * * apt update >> /var/log/maintenance.log 2>&1
+
+# Clean package cache weekly
+0 3 * * 0 apt autoremove -y && apt autoclean >> /var/log/maintenance.log 2>&1
+
+# Cleanup old log files weekly
+0 4 * * 0 find /var/log -name "*.log" -mtime +30 -delete 2>/dev/null
+
+# Cleanup temporary files daily
+0 5 * * * find /tmp -type f -atime +7 -delete 2>/dev/null
+
+# Update locate database daily
+0 6 * * * updatedb
+
+# Check disk usage daily and alert if >80%
+0 7 * * * df -h | awk '$5 ~ /[8-9][0-9]%/ {print "Disk usage warning: " $0}' | mail -s "Disk Usage Alert" username@localhost
+
+# Backup important configurations weekly
+0 8 * * 0 tar -czf /backup/config-$(date +\%Y\%m\%d).tar.gz /etc /home/username/.config
+
+# Rotate log files monthly
+0 9 1 * * logrotate /etc/logrotate.conf
+
+# Check for broken packages weekly
+0 10 * * 0 dpkg --audit >> /var/log/maintenance.log 2>&1
+
+# Update file permissions for development directories
+0 11 * * * chmod -R 755 /home/username/projects 2>/dev/null
+
+# Clean Docker images and containers monthly
+0 12 1 * * docker system prune -f >> /var/log/docker-cleanup.log 2>&1

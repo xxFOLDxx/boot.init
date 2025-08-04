@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Development Terminal
+Exec=gnome-terminal --tab --title="Main" --tab --title="Server" --command="fish -c 'cd ~/projects && fish'" --tab --title="Logs" --command="fish -c 'tail -f /var/log/syslog'"
+Icon=utilities-terminal
+Comment=Open development environment with multiple tabs
+Categories=Development;System;
+StartupNotify=true
+NoDisplay=false
+Hidden=false
+X-GNOME-Autostart-enabled=true

@@ -1,0 +1,28 @@
+[Unit]
+Description=System Monitoring Service
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=monitor
+Group=monitor
+ExecStart=/usr/local/bin/monitor.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+# Resource limits
+MemoryLimit=512M
+CPUQuota=50%
+
+# Security
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/log/monitoring
+
+[Install]
+WantedBy=multi-user.target

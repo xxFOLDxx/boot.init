@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Note Taking
+Exec=obsidian
+Icon=obsidian
+Comment=Open note-taking application
+Categories=Office;TextEditor;
+StartupNotify=true
+NoDisplay=false
+Hidden=false
+X-GNOME-Autostart-enabled=true
+TryExec=obsidian

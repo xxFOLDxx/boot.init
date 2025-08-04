@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=System Monitor
+Exec=gnome-system-monitor
+Icon=utilities-system-monitor
+Comment=Launch system monitor to track performance
+Categories=System;Monitor;
+StartupNotify=true
+NoDisplay=false
+Hidden=false
+X-GNOME-Autostart-enabled=true
+OnlyShowIn=GNOME;

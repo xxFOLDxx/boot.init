@@ -1,0 +1,21 @@
+[Unit]
+Description=Development Environment Setup
+After=network.target graphical-session.target
+Wants=network.target
+
+[Service]
+Type=oneshot
+User=%i
+Group=%i
+ExecStart=/home/%i/.local/bin/setup-dev-env.sh
+RemainAfterExit=yes
+StandardOutput=journal
+StandardError=journal
+
+# Environment setup
+Environment=HOME=/home/%i
+Environment=USER=%i
+EnvironmentFile=-/home/%i/.config/dev-env/config
+
+[Install]
+WantedBy=default.target
